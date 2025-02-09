@@ -8,16 +8,23 @@ namespace Infrastructure.ApiServices;
 public class ApiService : IApiService
 {
     private readonly ExchangeApiSettings _config;
-    
+
     public ApiService(IOptions<ExchangeApiSettings> settings)
     {
         _config = settings.Value;
     }
-    
-    public async Task<string?> GetTradesData(string pair, int maxCount)
+
+    public async Task<string?> GetTradesData(string pair, int maxCount, int? sort, int? start, int? end)
     {
-        var url = new Uri($"{_config.BaseUrl}{_config.Version}{_config.Endpoints.Trades}/t{pair}/hist?limit={maxCount}&sort=-1");
-        var baseUrl = new Uri($"https://api-pub.bitfinex.com/v2/trades/t{pair}/hist?limit={maxCount}&sort=-1");
+        var baseUrl = $"{_config.BaseUrl}{_config.Version}{_config.Endpoints.Trades}/t{pair}/hist";
+        var parameters = new Dictionary<string, object?>
+        {
+            { "limit", maxCount },
+            { "sort", sort },
+            { "start", start },
+            { "end", end }
+        };
+        var url = UriParamsBuilder.BuildUri(baseUrl, parameters);
         var options = new RestClientOptions(url);
         var client = new RestClient(options);
         var request = new RestRequest("");
