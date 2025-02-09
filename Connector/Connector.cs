@@ -14,9 +14,9 @@ public class Connector : ControllerBase
     }
     // GET
     [HttpGet]
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        _connectorRest.GetNewTradesAsync("BTCUSD", 125);
-        return Ok();
+        var trades = await _connectorRest.GetNewTradesAsync("BTCUSD", 125);
+        return Ok(trades);
     }
 }
