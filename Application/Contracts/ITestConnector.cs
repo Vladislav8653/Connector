@@ -1,4 +1,6 @@
-﻿namespace Application.Contracts
+﻿using Domain.Models;
+
+namespace Application.Contracts
 {
     interface ITestConnector
     {
