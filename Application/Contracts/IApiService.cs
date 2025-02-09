@@ -1,6 +1,6 @@
 ﻿namespace Application.Contracts;
 
-public class IApiService
+public interface IApiService
 {
-    
+    Task<string?> GetTradesData(string pair, int maxCount);
 }

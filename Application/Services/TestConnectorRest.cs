@@ -1,24 +1,19 @@
 ﻿using Application.Contracts;
 using Domain.Models;
-using RestSharp;
 
 namespace Application.Services;
 
 public class TestConnectorRest : ITestConnectorRest
 {
-    public TestConnectorRest()
+    private readonly IApiService _apiService;
+    public TestConnectorRest(IApiService apiService)
     {
-        
+        _apiService = apiService;
     }
     public async Task<IEnumerable<Trade>> GetNewTradesAsync(string pair, int maxCount)
     {
-        var baseUrl = new Uri($"https://api-pub.bitfinex.com/v2/trades/t{pair}/hist?limit={maxCount}&sort=-1");
-        var options = new RestClientOptions(baseUrl);
-        var client = new RestClient(options);
-        var request = new RestRequest("");
-        request.AddHeader("accept", "application/json");
-        var response = await client.GetAsync(request);
-        Console.WriteLine(response.Content);
+        var content = await _apiService.GetTradesData(pair, maxCount);
+        Console.WriteLine(content);
         throw new Exception("хуй");
     }
 

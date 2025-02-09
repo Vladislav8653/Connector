@@ -7,11 +7,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Domain\Domain.csproj" />
+      <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.1" />
+      <PackageReference Include="RestSharp" Version="112.1.1-alpha.0.4" />
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="RestSharp" Version="112.1.1-alpha.0.4" />
+      <ProjectReference Include="..\Application\Application.csproj" />
     </ItemGroup>
 
 </Project>
