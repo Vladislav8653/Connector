@@ -5,10 +5,10 @@ namespace Connector;
 
 [ApiController]
 [Route($"api")]
-public class Connector : ControllerBase
+public class ConnectorController : ControllerBase
 {
     private readonly ITestConnectorRest _connectorRest;
-    public Connector(ITestConnectorRest connectorRest)
+    public ConnectorController(ITestConnectorRest connectorRest)
     {
         _connectorRest = connectorRest;
     }
@@ -16,7 +16,7 @@ public class Connector : ControllerBase
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        var trades = await _connectorRest.GetNewTradesAsync("BTCUSD", 125);
-        return Ok(trades);
+        var candles = await _connectorRest.GetCandleSeriesAsync("BTCUSD", 100, new DateTimeOffset());
+        return Ok(candles);
     }
 }

@@ -32,4 +32,15 @@ public class ApiService : IApiService
         var response = await client.GetAsync(request);
         return response.Content;
     }
+
+    public async Task<string?> GetCandleSeries(string pair, int periodInSec, DateTimeOffset? from, DateTimeOffset? to = null, long? count = 0)
+    {
+        var options = new RestClientOptions("https://api-pub.bitfinex.com/v2/candles/trade%3A1m%3AtBTCUSD/hist");
+        var client = new RestClient(options);
+        var request = new RestRequest("");
+        request.AddHeader("accept", "application/json");
+        var response = await client.GetAsync(request);
+        return response.Content;
+
+    }
 }

@@ -1,5 +1,5 @@
-﻿using System.Globalization;
-using Application.Contracts;
+﻿using Application.Contracts;
+using Application.Utilities;
 using Domain.Models;
 
 namespace Application.Services;
@@ -18,14 +18,13 @@ public class TestConnectorRest : ITestConnectorRest
     {
         var content = await _apiService.GetTradesData(pair, maxCount, sort, start, end);
         if (content is null)
-            throw new Exception("No trades found"); // добавить миддлваре
+            throw new ArgumentException("No trades found"); 
         var trades = new List<Trade>();
-        var lines = content.Split(["],", "], "], StringSplitOptions.RemoveEmptyEntries);
+        var lines = StringUtility.GetDataLines(content);
         foreach (var line in lines) // можно преобразовать в LINQ, но с циклом понятнее выглядит алгоритм
         {
-            var trimmedLine = line.Trim().Trim('[', ']');
-            var values = trimmedLine.Split(',');
-            var amount = (decimal)Convert.ToDouble(values[2].Replace(".", ","));
+            var values = StringUtility.GetValuesFromLine(line);
+            var amount = StringUtility.ConvertFloatToDecimal(values[2]);
             var trade = new Trade
             {
                 Pair = pair,
@@ -43,6 +42,29 @@ public class TestConnectorRest : ITestConnectorRest
     public async Task<IEnumerable<Candle>> GetCandleSeriesAsync(string pair, int periodInSec, DateTimeOffset? from,
         DateTimeOffset? to = null, long? count = 0)
     {
-        throw new NotImplementedException();
+        var content = await _apiService.GetCandleSeries(pair, periodInSec, from, to, count);
+        if (content is null)
+            throw new ArgumentException("No candles found");
+        var candles = new List<Candle>();
+        var lines = StringUtility.GetDataLines(content);
+        foreach (var line in lines)
+        {
+            var values = StringUtility.GetValuesFromLine(line);
+            var closePrice = Convert.ToDecimal(values[2]);
+            var totalVolume = StringUtility.ConvertFloatToDecimal(values[5]);
+            var candle = new Candle
+            {
+                Pair = pair,
+                OpenPrice = Convert.ToDecimal(values[1]),
+                HighPrice = Convert.ToDecimal(values[3]),
+                LowPrice = Convert.ToDecimal(values[4]),
+                ClosePrice = closePrice,
+                TotalPrice = closePrice * totalVolume,
+                TotalVolume = totalVolume,
+                OpenTime = DateTimeOffset.FromUnixTimeMilliseconds(Convert.ToInt64(values[0])),
+            };
+            candles.Add(candle);
+        }
+        return candles;
     }
 }
