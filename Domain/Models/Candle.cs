@@ -1,4 +1,4 @@
-﻿namespace Application
+﻿namespace Domain.Models
 {
     public class Candle
     {
@@ -42,6 +42,5 @@
         /// Время
         /// </summary>
         public DateTimeOffset OpenTime { get; set; }
-
     }
 }

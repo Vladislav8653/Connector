@@ -1,4 +1,4 @@
-﻿namespace Application
+﻿namespace Domain.Models
 {
     public class Trade
     {
@@ -32,6 +32,5 @@
         /// Id трейда
         /// </summary>
         public string Id { get; set; }
-
     }
 }
