@@ -5,18 +5,17 @@ namespace Connector;
 
 [ApiController]
 [Route($"api")]
-public class ConnectorController : ControllerBase
+public class ConnectorController(ITestConnectorRest connectorRest, ITestConnectorWS connectorWs) : ControllerBase
 {
-    private readonly ITestConnectorRest _connectorRest;
-    public ConnectorController(ITestConnectorRest connectorRest)
-    {
-        _connectorRest = connectorRest;
-    }
+    private readonly ITestConnectorRest _connectorRest = connectorRest;
+
     // GET
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        var candles = await _connectorRest.GetTickerAsync("BTCUSD");//, "1m", DateTimeOffset.Now.AddSeconds(-300), DateTimeOffset.Now.AddSeconds(-20), 3, 1);
-        return Ok(candles);
+        /*connectorWs.SubscribeTrades("BTCUSD");
+        Thread.Sleep(60000);
+        connectorWs.UnsubscribeTrades("BTCUSD");*/
+        return Ok();
     }
 }

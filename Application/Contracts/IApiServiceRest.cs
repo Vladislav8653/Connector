@@ -1,6 +1,6 @@
 ﻿namespace Application.Contracts;
 
-public interface IApiService
+public interface IApiServiceRest
 {
     Task<string?> GetTradesDataAsync(string pair, int maxCount, int? sort, DateTimeOffset? start, DateTimeOffset? end);
     Task<string?> GetCandleSeriesDataAsync(string pair, string timeFrame, DateTimeOffset? from,

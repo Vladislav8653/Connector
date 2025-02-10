@@ -10,17 +10,17 @@ public class TestConnectorRest : ITestConnectorRest
     private readonly ImmutableHashSet<string> _timeFrames =
         ImmutableHashSet.Create("1m", "5m", "15m", "30m", "1h", "3h", "6h", "12h", "1D", "1W", "14D", "1M");
     
-    private readonly IApiService _apiService;
+    private readonly IApiServiceRest _apiServiceRest;
 
-    public TestConnectorRest(IApiService apiService)
+    public TestConnectorRest(IApiServiceRest apiServiceRest)
     {
-        _apiService = apiService;
+        _apiServiceRest = apiServiceRest;
     }
 
     public async Task<IEnumerable<Trade>> GetNewTradesAsync(string pair, int maxCount, int? sort = null,
         DateTimeOffset? start = null, DateTimeOffset? end = null)
     {
-        var content = await _apiService.GetTradesDataAsync(pair, maxCount, sort, start, end);
+        var content = await _apiServiceRest.GetTradesDataAsync(pair, maxCount, sort, start, end);
         if (content is null)
             throw new ArgumentException("No trades found");
         var trades = new List<Trade>();
@@ -49,7 +49,7 @@ public class TestConnectorRest : ITestConnectorRest
     {
         if (!_timeFrames.Contains(timeFrame))
             throw new ArgumentException("Invalid time frame");
-        var content = await _apiService.GetCandleSeriesDataAsync(pair, timeFrame, from, to, count, sort);
+        var content = await _apiServiceRest.GetCandleSeriesDataAsync(pair, timeFrame, from, to, count, sort);
         if (content is null)
             throw new ArgumentException("No candles found");
         var candles = new List<Candle>();
@@ -78,7 +78,7 @@ public class TestConnectorRest : ITestConnectorRest
 
     public async Task<Ticker> GetTickerAsync(string pair)
     {
-        var content = await _apiService.GetTickerDataAsync(pair);
+        var content = await _apiServiceRest.GetTickerDataAsync(pair);
         if (content is null)
             throw new ArgumentException("No ticker found");
         var values = StringUtility.GetValuesFromLine(content);

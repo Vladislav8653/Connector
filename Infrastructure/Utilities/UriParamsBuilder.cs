@@ -1,4 +1,4 @@
-﻿namespace Infrastructure.ApiServices;
+﻿namespace Infrastructure.Utilities;
 
 public static class UriParamsBuilder
 {

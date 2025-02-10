@@ -1,15 +1,16 @@
 ﻿using Application.Contracts;
 using Infrastructure.Configuration;
+using Infrastructure.Utilities;
 using Microsoft.Extensions.Options;
 using RestSharp;
 
 namespace Infrastructure.ApiServices;
 
-public class ApiService : IApiService
+public class ApiServiceRest : IApiServiceRest
 {
     private readonly ExchangeApiSettings _config;
 
-    public ApiService(IOptions<ExchangeApiSettings> settings)
+    public ApiServiceRest(IOptions<ExchangeApiSettings> settings)
     {
         _config = settings.Value;
     }
