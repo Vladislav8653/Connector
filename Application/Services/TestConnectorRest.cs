@@ -18,7 +18,7 @@ public class TestConnectorRest : ITestConnectorRest
     }
 
     public async Task<IEnumerable<Trade>> GetNewTradesAsync(string pair, int maxCount, int? sort = null,
-        long? start = null, long? end = null)
+        DateTimeOffset? start = null, DateTimeOffset? end = null)
     {
         var content = await _apiService.GetTradesDataAsync(pair, maxCount, sort, start, end);
         if (content is null)

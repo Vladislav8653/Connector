@@ -14,15 +14,15 @@ public class ApiService : IApiService
         _config = settings.Value;
     }
 
-    public async Task<string?> GetTradesDataAsync(string pair, int maxCount, int? sort, long? start, long? end)
+    public async Task<string?> GetTradesDataAsync(string pair, int maxCount, int? sort, DateTimeOffset? start, DateTimeOffset? end)
     {
         var baseUrl = $"{_config.BaseUrl}{_config.Version}{_config.Endpoints.Trades}/t{pair}/hist";
         var parameters = new Dictionary<string, object?>
         {
             { "limit", maxCount },
             { "sort", sort },
-            { "start", start },
-            { "end", end }
+            { "start", start?.ToUnixTimeMilliseconds() },
+            { "end", end?.ToUnixTimeMilliseconds() }
         };
         var url = UriParamsBuilder.BuildUri(baseUrl, parameters);
         var options = new RestClientOptions(url);
@@ -56,7 +56,7 @@ public class ApiService : IApiService
 
     public async Task<string?> GetTickerDataAsync(string pair)
     {
-        var url = $"{_config.BaseUrl}{_config.Version}{_config.Endpoints.Ticker}/t{pair}"; ;
+        var url = $"{_config.BaseUrl}{_config.Version}{_config.Endpoints.Ticker}/t{pair}";
         var options = new RestClientOptions(url);
         var client = new RestClient(options);
         var request = new RestRequest("");
