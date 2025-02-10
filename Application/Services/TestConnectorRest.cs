@@ -14,14 +14,14 @@ public class TestConnectorRest : ITestConnectorRest
     }
 
     public async Task<IEnumerable<Trade>> GetNewTradesAsync(string pair, int maxCount, int? sort = null,
-        int? start = null, int? end = null)
+        long? start = null, long? end = null)
     {
         var content = await _apiService.GetTradesData(pair, maxCount, sort, start, end);
         if (content is null)
             throw new ArgumentException("No trades found"); 
         var trades = new List<Trade>();
         var lines = StringUtility.GetDataLines(content);
-        foreach (var line in lines) // можно преобразовать в LINQ, но с циклом понятнее выглядит алгоритм
+        foreach (var line in lines) 
         {
             var values = StringUtility.GetValuesFromLine(line);
             var amount = StringUtility.ConvertFloatToDecimal(values[2]);
@@ -39,10 +39,10 @@ public class TestConnectorRest : ITestConnectorRest
         return trades;
     }
 
-    public async Task<IEnumerable<Candle>> GetCandleSeriesAsync(string pair, int periodInSec, DateTimeOffset? from,
-        DateTimeOffset? to = null, long? count = 0)
+    public async Task<IEnumerable<Candle>> GetCandleSeriesAsync(string pair, string timeFrame, DateTimeOffset? from,
+        DateTimeOffset? to = null, long? count = 0, int? sort = null)
     {
-        var content = await _apiService.GetCandleSeries(pair, periodInSec, from, to, count);
+        var content = await _apiService.GetCandleSeries(pair, timeFrame, from, to, count, sort);
         if (content is null)
             throw new ArgumentException("No candles found");
         var candles = new List<Candle>();
