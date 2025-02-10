@@ -1,4 +1,5 @@
-﻿using Application.Contracts;
+﻿using System.Collections.Immutable;
+using Application.Contracts;
 using Application.Utilities;
 using Domain.Models;
 
@@ -6,16 +7,19 @@ namespace Application.Services;
 
 public class TestConnectorRest : ITestConnectorRest
 {
+    private readonly ImmutableHashSet<string> _timeFrames =
+        ImmutableHashSet.Create("1m", "5m", "15m", "30m", "1h", "3h", "6h", "12h", "1D", "1W", "14D", "1M");
     private readonly IApiService _apiService;
 
     public TestConnectorRest(IApiService apiService)
     {
         _apiService = apiService;
     }
-
+    
     public async Task<IEnumerable<Trade>> GetNewTradesAsync(string pair, int maxCount, int? sort = null,
         long? start = null, long? end = null)
     {
+        
         var content = await _apiService.GetTradesData(pair, maxCount, sort, start, end);
         if (content is null)
             throw new ArgumentException("No trades found"); 
@@ -42,6 +46,8 @@ public class TestConnectorRest : ITestConnectorRest
     public async Task<IEnumerable<Candle>> GetCandleSeriesAsync(string pair, string timeFrame, DateTimeOffset? from,
         DateTimeOffset? to = null, long? count = 0, int? sort = null)
     {
+        if (!_timeFrames.Contains(timeFrame))
+            throw new ArgumentException("Invalid time frame");
         var content = await _apiService.GetCandleSeries(pair, timeFrame, from, to, count, sort);
         if (content is null)
             throw new ArgumentException("No candles found");
