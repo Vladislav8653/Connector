@@ -5,14 +5,24 @@ namespace Application.Contracts;
 public interface ITestConnectorWS
 {
     #region Socket
-    
+    // синхронные методы заменены асинхронными
     event Action<Trade> NewBuyTrade;
     event Action<Trade> NewSellTrade;
-    void SubscribeTrades(string pair, int maxCount = 100);
-    void UnsubscribeTrades(string pair);
+    
+    // в документации ничего не сказано про параметр maxCount, поэтому он был удалён
+    Task SubscribeTradesAsync(string pair);
+    Task UnsubscribeTradesAsync(string pair);
     event Action<Candle> CandleSeriesProcessing;
-    void SubscribeCandles(string pair, int periodInSec, DateTimeOffset? from = null, DateTimeOffset? to = null, long? count = 0);
-    void UnsubscribeCandles(string pair);
+    
+    // Добавлен параметр timeframe. 
+    // Также не ясно, зачем нужны остальные параметры, так как в вебсокетах нужна только пара валют и timeframe
+    Task SubscribeCandlesAsync(string pair, string timeFrame);
+    Task UnsubscribeCandlesAsync(string pair);
+
+    // добавлены методы для установки и разрыва соединения 
+    Task ConnectAsync();
+
+    Task DisconnectAsync();
     
     #endregion
 

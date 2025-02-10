@@ -1,52 +1,90 @@
 ﻿using System.Net.WebSockets;
 using System.Text;
+using System.Text.Json;
 using Application.Contracts;
 using Domain.Models;
 using Infrastructure.Configuration;
 using Microsoft.Extensions.Options;
-//using WebSocketSharp;
 
 namespace Infrastructure.ApiServices;
 
 public class ApiServiceWs : IApiServiceWs
 {
     private readonly ClientWebSocket _webSocket;
-
+    private readonly string _url;
     public ApiServiceWs(IOptions<ExchangeApiSettings> settings)
     {
         _webSocket = new ClientWebSocket();
-        _webSocket.ConnectAsync(new Uri(settings.Value.WebSocketUrl), CancellationToken.None).Wait();
-        _ = Task.Run(ReceiveMessagesAsync);
+        _url = settings.Value.WebSocketUrl;
     }
-
+    
     public event Action<Trade>? NewBuyTrade;
     public event Action<Trade>? NewSellTrade;
     public event Action<Candle>? CandleSeriesProcessing;
-    
-    public void SubscribeTrades(string pair, long? maxCount)
-    {
-        throw new NotImplementedException();
-    }
 
-    public void UnsubscribeTrades(string pair)
-    {
-        throw new NotImplementedException();
-    }
 
-    public void SubscribeCandles(string pair, int periodInSec, DateTimeOffset? from = null, DateTimeOffset? to = null,
-        long? count = 0)
+    public async Task ConnectAsync()
     {
-        throw new NotImplementedException();
-    }
-
-    public void UnsubscribeCandles(string pair)
-    {
-        throw new NotImplementedException();
+        await _webSocket.ConnectAsync(new Uri(_url), CancellationToken.None);
+        _ = Task.Run(ReceiveMessagesAsync);
     }
     
+    public async Task DisconnectAsync()
+    {
+        if (_webSocket.State == WebSocketState.Open)
+        {
+            await _webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", CancellationToken.None);
+            Console.WriteLine("Disconnected from the server.");
+        }
+    }
+    
+    public async Task SubscribeTradesAsync(string pair)
+    {
+        var request = JsonSerializer.Serialize(new
+        {
+            @event = "subscribe",
+            channel = "ticker",
+            symbol = $"t{pair}",
+        });
+        await SendMessageAsync(request);
+    }
+
+    public async Task UnsubscribeTradesAsync(string pair)
+    {
+        var request = JsonSerializer.Serialize(new
+        {
+            @event = "unsubscribe",
+            channel = "ticker",
+            symbol = $"t{pair}"
+        });
+        await SendMessageAsync(request);
+    }
+
+    public async Task SubscribeCandlesAsync(string pair, string timeFrame)
+    {
+        var key = $"trade:{timeFrame}:t{pair}";
+        var request = JsonSerializer.Serialize(new
+        {
+            @event = "subscribe",
+            channel = "candles",
+            key = key
+        });
+        await SendMessageAsync(request);
+    }
+
+    public async Task UnsubscribeCandlesAsync(string pair)
+    {
+        var request = JsonSerializer.Serialize(new
+        {
+            @event = "unsubscribe",
+            channel = "candles",
+        });
+        await SendMessageAsync(request);
+    }
+
     private async Task ReceiveMessagesAsync()
     {
-        var buffer = new byte[1024 * 4];
+        var buffer = new byte[1024];
 
         while (_webSocket.State == WebSocketState.Open)
         {
@@ -64,13 +102,14 @@ public class ApiServiceWs : IApiServiceWs
             }
         }
     }
-    
+
     private async Task SendMessageAsync(string message)
     {
         if (_webSocket.State == WebSocketState.Open)
         {
             var buffer = Encoding.UTF8.GetBytes(message);
-            await _webSocket.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true, CancellationToken.None);
+            await _webSocket.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true,
+                CancellationToken.None);
             Console.WriteLine($"Sent: {message}");
         }
     }
