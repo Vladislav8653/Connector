@@ -16,7 +16,7 @@ public class ConnectorController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        var candles = await _connectorRest.GetCandleSeriesAsync("BTCUSD", "1m", DateTimeOffset.Now.AddSeconds(-300), DateTimeOffset.Now.AddSeconds(-20), 3, 1);
+        var candles = await _connectorRest.GetTickerAsync("BTCUSD");//, "1m", DateTimeOffset.Now.AddSeconds(-300), DateTimeOffset.Now.AddSeconds(-20), 3, 1);
         return Ok(candles);
     }
 }

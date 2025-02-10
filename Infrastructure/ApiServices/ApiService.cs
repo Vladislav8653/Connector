@@ -14,7 +14,7 @@ public class ApiService : IApiService
         _config = settings.Value;
     }
 
-    public async Task<string?> GetTradesData(string pair, int maxCount, int? sort, long? start, long? end)
+    public async Task<string?> GetTradesDataAsync(string pair, int maxCount, int? sort, long? start, long? end)
     {
         var baseUrl = $"{_config.BaseUrl}{_config.Version}{_config.Endpoints.Trades}/t{pair}/hist";
         var parameters = new Dictionary<string, object?>
@@ -33,7 +33,7 @@ public class ApiService : IApiService
         return response.Content;
     }
 
-    public async Task<string?> GetCandleSeries(string pair, string timeFrame, DateTimeOffset? from,
+    public async Task<string?> GetCandleSeriesDataAsync(string pair, string timeFrame, DateTimeOffset? from,
         DateTimeOffset? to = null, long? count = 0, int? sort = null)
     {
         var baseUrl = $"{_config.BaseUrl}{_config.Version}{_config.Endpoints.Candles}/trade:{timeFrame}:t{pair}/hist";
@@ -45,6 +45,18 @@ public class ApiService : IApiService
             { "end", to?.ToUnixTimeMilliseconds() }
         };
         var url = UriParamsBuilder.BuildUri(baseUrl, parameters);
+        var options = new RestClientOptions(url);
+        var client = new RestClient(options);
+        var request = new RestRequest("");
+        request.AddHeader("accept", "application/json");
+        var response = await client.GetAsync(request);
+        return response.Content;
+
+    }
+
+    public async Task<string?> GetTickerDataAsync(string pair)
+    {
+        var url = $"{_config.BaseUrl}{_config.Version}{_config.Endpoints.Ticker}/t{pair}"; ;
         var options = new RestClientOptions(url);
         var client = new RestClient(options);
         var request = new RestRequest("");
