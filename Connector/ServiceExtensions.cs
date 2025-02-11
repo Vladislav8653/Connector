@@ -1,5 +1,6 @@
 ﻿using Application.Contracts;
 using Application.Services;
+using Application.Utilities;
 using Infrastructure.ApiServices;
 using Infrastructure.Configuration;
 
@@ -10,7 +11,7 @@ public static class ServiceExtensions
     public static void ConfigureConnectorService(this IServiceCollection services)
     {
         services.AddScoped<ITestConnectorRest, TestConnectorRest>();
-        services.AddScoped<ITestConnectorWS, TestConnectorWS>();
+        services.AddScoped<ITestConnectorWs, TestConnectorWs>();
     }
     
     public static void ConfigureExternalApiService(this IServiceCollection services)

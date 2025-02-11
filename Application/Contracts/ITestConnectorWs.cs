@@ -2,7 +2,7 @@
 
 namespace Application.Contracts;
 
-public interface ITestConnectorWS
+public interface ITestConnectorWs
 {
     #region Socket
     // синхронные методы заменены асинхронными

@@ -5,13 +5,14 @@ namespace Connector;
 
 [ApiController]
 [Route($"api")]
-public class ConnectorController(ITestConnectorRest connectorRest, ITestConnectorWS connectorWs) : ControllerBase
+public class ConnectorController(ITestConnectorRest connectorRest, ITestConnectorWs connectorWs) : ControllerBase
 {
     // GET
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-       
+        await connectorWs.ConnectAsync();
+        await connectorWs.SubscribeTradesAsync("BTCUSD");
         return Ok();
     }
 }

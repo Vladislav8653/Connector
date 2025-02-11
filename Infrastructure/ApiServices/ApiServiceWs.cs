@@ -2,6 +2,7 @@
 using System.Text;
 using System.Text.Json;
 using Application.Contracts;
+using Application.Utilities;
 using Domain.Models;
 using Infrastructure.Configuration;
 using Microsoft.Extensions.Options;
@@ -18,11 +19,8 @@ public class ApiServiceWs : IApiServiceWs
         _url = settings.Value.WebSocketUrl;
     }
     
-    public event Action<Trade>? NewBuyTrade;
-    public event Action<Trade>? NewSellTrade;
-    public event Action<Candle>? CandleSeriesProcessing;
-
-
+    public event Action<string>? OnMessageReceived;
+    
     public async Task ConnectAsync()
     {
         await _webSocket.ConnectAsync(new Uri(_url), CancellationToken.None);
@@ -37,7 +35,7 @@ public class ApiServiceWs : IApiServiceWs
             Console.WriteLine("Disconnected from the server.");
         }
     }
-    
+
     public async Task SubscribeTradesAsync(string pair)
     {
         var request = JsonSerializer.Serialize(new
@@ -77,7 +75,8 @@ public class ApiServiceWs : IApiServiceWs
         var request = JsonSerializer.Serialize(new
         {
             @event = "unsubscribe",
-            channel = "candles",
+            channel = "candles", 
+            key = $"trade:1m:t{pair}"
         });
         await SendMessageAsync(request);
     }
@@ -97,8 +96,7 @@ public class ApiServiceWs : IApiServiceWs
             else
             {
                 var message = Encoding.UTF8.GetString(buffer, 0, result.Count);
-                Console.WriteLine($"Received: {message}");
-                // Здесь вы можете обработать полученное сообщение
+                OnMessageReceived?.Invoke(message);
             }
         }
     }
