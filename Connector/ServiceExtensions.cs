@@ -18,6 +18,7 @@ public static class ServiceExtensions
     {
         services.AddScoped<IApiServiceRest, ApiServiceRest>();
         services.AddSingleton<IApiServiceWs, ApiServiceWs>();
+        services.AddSingleton<IWsDataHandleService, WsDataHandleService>();
     }
 
     public static void SetupConfiguration(this IServiceCollection services, IConfiguration configuration)

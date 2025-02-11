@@ -1,6 +1,4 @@
-﻿using Domain.Models;
-
-namespace Application.Contracts;
+﻿namespace Application.Contracts;
 
 public interface IApiServiceWs
 {
@@ -10,5 +8,5 @@ public interface IApiServiceWs
     Task UnsubscribeCandlesAsync(string pair);
     Task ConnectAsync();
     Task DisconnectAsync();
-    public event Action<string> OnMessageReceived; 
+    public event Action<string> OnMessageReceived;
 }
