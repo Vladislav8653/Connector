@@ -8,13 +8,18 @@ namespace Connector;
 
 public static class ServiceExtensions
 {
-    public static void ConfigureConnectorService(this IServiceCollection services)
+    public static void ConfigureConnectorServices(this IServiceCollection services)
     {
         services.AddScoped<ITestConnectorRest, TestConnectorRest>();
         services.AddScoped<ITestConnectorWs, TestConnectorWs>();
     }
+
+    public static void ConfigureBusinessServices(this IServiceCollection services)
+    {
+        services.AddScoped<BalanceService>();
+    }
     
-    public static void ConfigureExternalApiService(this IServiceCollection services)
+    public static void ConfigureExternalApiServices(this IServiceCollection services)
     {
         services.AddScoped<IApiServiceRest, ApiServiceRest>();
         services.AddSingleton<IApiServiceWs, ApiServiceWs>();

@@ -64,6 +64,17 @@ public class ApiServiceRest : IApiServiceRest
         request.AddHeader("accept", "application/json");
         var response = await client.GetAsync(request);
         return response.Content;
+    }
 
+    public async Task<string?> GetExchangeRate(string ccy1, string ccy2)
+    {
+        var url = $"{_config.BaseUrl}{_config.Version}{_config.Endpoints.Calc}/fx";
+        var options = new RestClientOptions(url);
+        var client = new RestClient(options);
+        var request = new RestRequest("");
+        request.AddHeader("accept", "application/json");
+        request.AddJsonBody($"{{\"ccy1\":\"{ccy1}\",\"ccy2\":\"{ccy2}\"}}", false);
+        var response = await client.PostAsync(request);
+        return response.Content;
     }
 }

@@ -1,18 +1,17 @@
 ﻿using Application.Contracts;
+using Application.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Connector;
 
 [ApiController]
 [Route($"api")]
-public class ConnectorController(ITestConnectorRest connectorRest, ITestConnectorWs connectorWs) : ControllerBase
+public class ConnectorController(ITestConnectorRest connectorRest, ITestConnectorWs connectorWs, BalanceService balanceService) : ControllerBase
 {
     // GET
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        await connectorWs.ConnectAsync();
-        await connectorWs.SubscribeTradesAsync("BTCUSD");
-        return Ok();
+        return Ok(await balanceService.GetBalance());
     }
 }
