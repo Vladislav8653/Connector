@@ -48,7 +48,7 @@ public class TestConnectorRest : ITestConnectorRest
         DateTimeOffset? to = null, long? count = 0, int? sort = null)
     {
         if (!_timeFrames.Contains(timeFrame))
-            throw new ArgumentException("Invalid time frame");
+            throw new ArgumentException($"Invalid time frame. Legal are 1m, 5m, 15m, 30m, 1h, 3h, 6h, 12h, 1D, 1W, 14D, 1M");
         var content = await _apiServiceRest.GetCandleSeriesDataAsync(pair, timeFrame, from, to, count, sort);
         if (content is null)
             throw new ArgumentException("No candles found");
