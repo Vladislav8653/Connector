@@ -1,4 +1,5 @@
 ﻿using Application.Contracts;
+using Application.DTO;
 using Application.DTO.WSConnector;
 using Microsoft.AspNetCore.Mvc;
 

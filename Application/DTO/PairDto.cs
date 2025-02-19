@@ -1,4 +1,4 @@
-﻿namespace Application.DTO.WSConnector;
+﻿namespace Application.DTO;
 
 public class PairDto
 {
